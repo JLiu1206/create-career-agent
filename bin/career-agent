@@ -1,0 +1,67 @@
+#!/bin/sh
+# Set up your own copy of the career agent template for Claude Code.
+# Usage: career-agent [folder]     (default folder: my-career-agent)
+set -u
+
+TEMPLATE_URL="${CAREER_AGENT_TEMPLATE_URL:-https://github.com/JLiu1206/career-agent-template.git}"
+
+usage() {
+  cat <<USAGE
+Usage: career-agent [folder]
+
+Copies the career agent template into a new folder (default: my-career-agent)
+and starts a fresh, private git history there. Needs git.
+
+Template: https://github.com/JLiu1206/career-agent-template
+USAGE
+}
+
+case "${1:-}" in
+  -h|--help) usage; exit 0 ;;
+esac
+
+folder="${1:-my-career-agent}"
+
+if [ -e "$folder" ]; then
+  if [ ! -d "$folder" ] || [ -n "$(ls -A "$folder" 2>/dev/null)" ]; then
+    echo "\"$folder\" already exists and isn't empty. Choose a new folder name." >&2
+    exit 2
+  fi
+fi
+
+if ! command -v git >/dev/null 2>&1; then
+  echo "git is needed. Install it (macOS: xcode-select --install) and try again." >&2
+  exit 1
+fi
+
+echo "Downloading the career agent template into $folder ..."
+if ! err=$(git clone --quiet --depth 1 "$TEMPLATE_URL" "$folder" 2>&1); then
+  echo "Could not download the template from $TEMPLATE_URL." >&2
+  echo "$err" >&2
+  echo "Check your internet connection and try again." >&2
+  exit 1
+fi
+
+# Start a fresh history with no link back to the public template, so your
+# CV and applications can never be pushed there by accident.
+case "$folder" in
+  /*) gitdir="$folder/.git" ;;
+  *) gitdir="./$folder/.git" ;;
+esac
+rm -rf -- "$gitdir"
+git -C "$folder" init --quiet -b main 2>/dev/null || git -C "$folder" init --quiet
+
+cat <<NEXT
+
+Done. Next:
+
+  cd $folder
+  (put your CV and past applications in inbox/)
+  claude
+  /career-setup
+
+No CV on this computer? Try the made-up demo student:
+  python3 scripts/load-demo.py
+
+Keep this folder private: it will hold your CV.
+NEXT

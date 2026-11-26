@@ -1,0 +1,27 @@
+{
+  "name": "create-career-agent",
+  "version": "1.0.0",
+  "description": "Set up the career agent template for Claude Code: draft internship, graduate scheme, placement and research applications from your own facts, in your own voice.",
+  "bin": {
+    "create-career-agent": "bin/create-career-agent.js"
+  },
+  "files": [
+    "bin/create-career-agent.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JLiu1206/create-career-agent.git"
+  },
+  "homepage": "https://github.com/JLiu1206/career-agent-template",
+  "keywords": ["claude-code", "claude", "careers", "applications", "template"],
+  "author": "Jayden Liu",
+  "license": "MIT"
+}
